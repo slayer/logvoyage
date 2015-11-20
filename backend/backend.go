@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"../common"
@@ -40,7 +41,11 @@ func Start(userTcpDsn, userHttpDsn string) {
 }
 
 func initRedis() {
-	r, err := redis.Dial("tcp", ":6379")
+	redis_host := os.Getenv("LOGVOYAGE_REDIS")
+	if len(redis_host) == 0 {
+		redis_host = ":6379"
+	}
+	r, err := redis.Dial("tcp", redis_host)
 	if err != nil {
 		log.Fatal("Cannot connect to redis")
 	}
