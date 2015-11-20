@@ -18,7 +18,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/firstrow/logvoyage/common"
+	"../common"
 
 	"code.google.com/p/go.net/websocket"
 	"github.com/garyburd/redigo/redis"

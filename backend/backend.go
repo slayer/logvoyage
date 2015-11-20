@@ -9,8 +9,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/firstrow/logvoyage/common"
-	"github.com/firstrow/logvoyage/web_socket"
+	"../common"
+	"../web_socket"
 	"github.com/garyburd/redigo/redis"
 )
 
