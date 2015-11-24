@@ -1,3 +1,10 @@
+##################################################
+#
+#                 ALL IN ONE:
+#           Java, ES, Redis, LogVoyage
+#  (and ssh, syslog, etc, from phusion/baseimage)
+#
+##################################################
 FROM phusion/baseimage:0.9.16
 MAINTAINER Vlad Moskovets <devvlad@gmail.com>
 
@@ -45,19 +52,20 @@ RUN arch="$(dpkg --print-architecture)" \
 
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 46095ACC8548582C1A2699A9D27D666CD88E42B4
 
-ENV ELASTICSEARCH_MAJOR 1.5
-ENV ELASTICSEARCH_VERSION 1.5.2
-ENV ELASTICSEARCH_REPO_BASE http://packages.elasticsearch.org/elasticsearch/1.5/debian
+ENV ELASTICSEARCH_MAJOR 2.0
+ENV ELASTICSEARCH_VERSION 2.0.0
+ENV ELASTICSEARCH_REPO_BASE http://packages.elastic.co/elasticsearch/$ELASTICSEARCH_MAJOR/debian
 
 RUN echo "deb $ELASTICSEARCH_REPO_BASE stable main" > /etc/apt/sources.list.d/elasticsearch.list
 
 RUN set -x \
   && apt-get update \
-  && apt-get install -y --no-install-recommends elasticsearch=$ELASTICSEARCH_VERSION \
+  && apt-get install -y --no-install-recommends elasticsearch \
   && rm -rf /var/lib/apt/lists/*
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
+COPY etc/elasticsearch /usr/share/elasticsearch/config
 RUN set -ex \
   && for path in \
     /usr/share/elasticsearch/data \
@@ -70,11 +78,11 @@ RUN set -ex \
   done
 
 COPY etc /etc
-RUN ln -s /etc/elasticsearch/logging.yml /usr/share/elasticsearch/config/logging.yml
-RUN sed -i 's/daemonize yes/daemonize no/' /etc/redis/redis.conf
 VOLUME /usr/share/elasticsearch/data
 EXPOSE 9200 9300
 
+# REDIS
+RUN sed -i 's/daemonize yes/daemonize no/' /etc/redis/redis.conf
 #########################
 #
 #     LogVoyage part
@@ -83,5 +91,5 @@ EXPOSE 9200 9300
 COPY logvoyage /app/logvoyage
 COPY web/templates /app/web/templates
 COPY static /app/static
-EXPOSE 3000 12345
+EXPOSE 3000 12345 27077 27078
 
